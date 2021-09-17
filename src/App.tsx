@@ -1,16 +1,41 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import { Gases, Countries } from "./types.d";
+import axios from "axios";
+
+import { HorizontalBarChart } from "./components/HorizontalBarChart";
 
 function App() {
+  const countriesArr = Object.values(Countries);
+  const gasesArr = Object.values(Gases);
   const [country, setCountry] = useState("DE");
   const [gas, setGas] = useState("carbonmonoxide");
 
-  const countriesArr = Object.values(Countries);
-  const gasesArr = Object.values(Gases);
+  const [data, setData] = useState({
+    labels: [],
+    dataForUse: [],
+  });
+  // const [loaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    console.log(gas, country);
+    const API_URL = `https://api.v2.emissions-api.org/api/v2/${gas}/average.json?country=${country}&begin=2021-02-24&end=2021-03-01`;
+    axios.get(API_URL).then((response) => {
+      const parsedDates = response.data.map((d: any) => {
+        const date = new Date(d.end);
+        const printedDate =
+          date.getFullYear() +
+          "-" +
+          (date.getMonth() + 1) +
+          "-" +
+          date.getDate();
+
+        return printedDate;
+      });
+      setData({
+        labels: parsedDates,
+        dataForUse: response.data,
+      });
+    });
   }, [gas, country]);
 
   return (
@@ -58,6 +83,7 @@ function App() {
           );
         })}
       </div>
+      <HorizontalBarChart labels={data.labels} />
     </div>
   );
 }
