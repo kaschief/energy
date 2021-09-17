@@ -83,7 +83,13 @@ function App() {
           );
         })}
       </div>
-      {loaded && <HorizontalBarChart labels={data.labels} gas={gas} />}{" "}
+      {loaded && (
+        <HorizontalBarChart
+          labels={data.labels}
+          gas={gas}
+          allData={data.dataForUse}
+        />
+      )}
     </div>
   );
 }
