@@ -5,6 +5,12 @@ import axios from "axios";
 
 import { HorizontalBarChart } from "./components/HorizontalBarChart";
 
+interface Data {
+  average: number;
+  end: string;
+  start: string;
+}
+
 function App() {
   const countriesArr = Object.values(Countries);
   const gasesArr = Object.values(Gases);
@@ -15,12 +21,15 @@ function App() {
     labels: [],
     dataForUse: [],
   });
-  const [loaded, setIsLoaded] = useState(false);
+  const [fetching, setIsfetching] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
+    setIsfetching(true);
     const API_URL = `https://api.v2.emissions-api.org/api/v2/${gas}/average.json?country=${country}&begin=2021-02-24&end=2021-03-01`;
-    axios.get(API_URL).then((response) => {
-      const parsedDates = response.data.map((d: any) => {
+    axios.get(API_URL).then(({ data }) => {
+      const dataPresent = Array.isArray(data) && !!data.length;
+      const parsedDates = data.map((d: Data) => {
         const date = new Date(d.end);
         const printedDate =
           date.getFullYear() +
@@ -31,11 +40,17 @@ function App() {
 
         return printedDate;
       });
-      setData({
-        labels: parsedDates,
-        dataForUse: response.data,
-      });
-      setIsLoaded(true);
+      setIsfetching(false);
+
+      if (dataPresent) {
+        setError(false);
+        setData({
+          labels: parsedDates,
+          dataForUse: data as any,
+        });
+      } else {
+        setError(true);
+      }
     });
   }, [gas, country]);
 
@@ -60,7 +75,6 @@ function App() {
               style={{ margin: "0px 5px" }}
               onClick={() => {
                 setCountry(country);
-                setIsLoaded(false);
               }}
             >
               {country}
@@ -83,12 +97,18 @@ function App() {
           );
         })}
       </div>
-      {loaded && (
+      {!fetching && !error && (
         <HorizontalBarChart
           labels={data.labels}
           gas={gas}
           allData={data.dataForUse}
         />
+      )}
+
+      {fetching && !error && <div>Still fetching your data</div>}
+
+      {!fetching && error && (
+        <div>Sorry, no results were found for this search.</div>
       )}
     </div>
   );
