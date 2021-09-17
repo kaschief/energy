@@ -3,16 +3,17 @@ import { Bar } from "react-chartjs-2";
 
 interface IProps {
   labels: string[];
+  gas: string;
   label?: string;
   dates?: string[];
 }
 
-export const HorizontalBarChart: React.FC<IProps> = ({ labels }) => {
+export const HorizontalBarChart: React.FC<IProps> = ({ labels, gas }) => {
   const data = {
     labels: labels,
     datasets: [
       {
-        label: "# of Votes",
+        label: `Emission of ${gas}`,
         data: [12, 19, 3, 5, 2, 3],
         backgroundColor: [
           "rgba(255, 99, 132, 0.2)",

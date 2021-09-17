@@ -15,7 +15,7 @@ function App() {
     labels: [],
     dataForUse: [],
   });
-  // const [loaded, setIsLoaded] = useState(false);
+  const [loaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const API_URL = `https://api.v2.emissions-api.org/api/v2/${gas}/average.json?country=${country}&begin=2021-02-24&end=2021-03-01`;
@@ -35,6 +35,7 @@ function App() {
         labels: parsedDates,
         dataForUse: response.data,
       });
+      setIsLoaded(true);
     });
   }, [gas, country]);
 
@@ -51,7 +52,6 @@ function App() {
         <h1 style={{ margin: "0px 5px" }}>{country}</h1>
         <h1 style={{ margin: "0px 5px" }}>{gas}</h1>
       </div>
-
       <div style={{ margin: "20px" }}>
         {countriesArr.map((country, index) => {
           return (
@@ -60,6 +60,7 @@ function App() {
               style={{ margin: "0px 5px" }}
               onClick={() => {
                 setCountry(country);
+                setIsLoaded(false);
               }}
             >
               {country}
@@ -67,7 +68,6 @@ function App() {
           );
         })}
       </div>
-
       <div style={{ margin: "20px" }}>
         {gasesArr.map((gas, index) => {
           return (
@@ -83,7 +83,7 @@ function App() {
           );
         })}
       </div>
-      <HorizontalBarChart labels={data.labels} />
+      {loaded && <HorizontalBarChart labels={data.labels} gas={gas} />}{" "}
     </div>
   );
 }
