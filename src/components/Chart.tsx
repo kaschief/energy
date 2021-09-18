@@ -1,5 +1,5 @@
 import React from "react";
-import { Bar } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 
 interface IProps {
   gas: string;
@@ -24,10 +24,6 @@ export const Chart: React.FC<IProps> = ({ gas, data }) => {
   const generateHex = () =>
     `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 
-  const backgroundColors = parsedDates.map(() => generateHex());
-
-  const borderColor = generateHex();
-
   const values = data!.map((el) => el.average);
 
   const chartData = {
@@ -36,30 +32,44 @@ export const Chart: React.FC<IProps> = ({ gas, data }) => {
       {
         label: `Emission of ${gas}`,
         data: values,
-        backgroundColor: backgroundColors,
-        borderColor: borderColor,
-        borderWidth: 2,
+        backgroundColor: generateHex(),
+        borderColor: generateHex(),
+        borderWidth: 4,
       },
     ],
   };
 
   return (
     <div>
-      <Bar
+      <Line
         data={chartData}
         options={{
           responsive: true,
           maintainAspectRatio: true,
-          color: "blue",
-          indexAxis: "y",
-          resizeDelay: 1000,
+          indexAxis: "x",
           aspectRatio: 4,
-          // bar: {
-          //   borderRadius: 5,
-          // },
-          layout: {
-            padding: {
-              left: 0,
+          elements: {
+            line: {
+              fill: true,
+              tension: 0.5,
+            },
+            point: {
+              radius: 2,
+            },
+          },
+          plugins: {
+            legend: {
+              fullSize: true,
+              position: "bottom",
+              labels: {
+                boxWidth: 100,
+                boxHeight: 20,
+                font: {
+                  size: 14,
+                  family: "Arial",
+                  weight: "600",
+                },
+              },
             },
           },
         }}
