@@ -30,7 +30,7 @@ function App() {
 
   const firstAvailableDate: string = "2019-01-01";
   const lastAvailableDate: string = "2021-09-10";
-  const [beginDate, setBeginDate] = useState(firstAvailableDate);
+  const [beginDate, setBeginDate] = useState("2021-01-01");
   const [endDate, setEndDate] = useState(lastAvailableDate);
 
   useEffect(() => {
@@ -54,7 +54,16 @@ function App() {
   }, [gas, country, beginDate, endDate]);
 
   return (
-    <div className="App">
+    <div
+      className="App"
+      style={{
+        display: "flex",
+        width: "80%",
+        flexDirection: "column",
+        margin: "0 auto",
+        justifyContent: "center",
+      }}
+    >
       <div
         style={{
           margin: "20px",
@@ -65,6 +74,41 @@ function App() {
       >
         <h1 style={{ margin: "0px 5px" }}>{country}</h1>
         <h1 style={{ margin: "0px 5px" }}>{gas}</h1>
+      </div>
+
+      <div
+        style={{
+          margin: "0 auto",
+          display: "flex",
+          width: "40%",
+          justifyContent: "space-evenly",
+          height: "50px",
+          alignItems: "center",
+        }}
+      >
+        <input
+          type="date"
+          required
+          name="begin-date"
+          value={beginDate}
+          min={firstAvailableDate}
+          max="2021-09-10"
+          onChange={(e) => {
+            setBeginDate(e.target.value);
+          }}
+        />
+
+        <input
+          type="date"
+          required
+          name="end-date"
+          value={endDate}
+          min={beginDate}
+          max={lastAvailableDate}
+          onChange={(e) => {
+            setEndDate(e.target.value);
+          }}
+        />
       </div>
 
       <div style={{ margin: "20px" }}>
@@ -104,39 +148,6 @@ function App() {
       {!error && fetching && <div>Still fetching your data</div>}
 
       {error && <div>Sorry, no results were found for this search.</div>}
-
-      <div
-        style={{
-          margin: "20px",
-          display: "flex",
-          width: "100%",
-          justifyContent: "center",
-        }}
-      >
-        <input
-          type="date"
-          name="begin-date"
-          value={beginDate}
-          min={firstAvailableDate}
-          max="2021-09-10"
-          onChange={(e) => {
-            setBeginDate(e.target.value);
-            console.log(beginDate);
-          }}
-        />
-
-        <input
-          type="date"
-          name="end-date"
-          value={endDate}
-          min={beginDate}
-          max={lastAvailableDate}
-          onChange={(e) => {
-            setEndDate(e.target.value);
-            console.log(endDate);
-          }}
-        />
-      </div>
     </div>
   );
 }

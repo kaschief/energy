@@ -48,11 +48,10 @@ export const Chart: React.FC<IProps> = ({ gas, data }) => {
           responsive: true,
           maintainAspectRatio: true,
           indexAxis: "y",
-          // aspectRatio: 4,
           elements: {
             line: {
               fill: true,
-              tension: 1,
+              tension: 0.5,
             },
             point: {
               pointStyle: "dash",
@@ -61,7 +60,7 @@ export const Chart: React.FC<IProps> = ({ gas, data }) => {
           plugins: {
             legend: {
               fullSize: true,
-              position: "bottom",
+              position: "top",
               labels: {
                 boxWidth: 100,
                 boxHeight: 20,
