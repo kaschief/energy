@@ -3,12 +3,16 @@ import "./App.css";
 import { Gases, Countries } from "./types.d";
 import axios from "axios";
 
-import { HorizontalBarChart } from "./components/HorizontalBarChart";
+import { Chart } from "./components/Chart";
 
 interface Data {
   average: number;
   end: string;
   start: string;
+}
+
+interface ServerResponse {
+  data: Data[];
 }
 
 function App() {
@@ -18,36 +22,25 @@ function App() {
   const [gas, setGas] = useState("carbonmonoxide");
 
   const [data, setData] = useState({
-    labels: [],
-    dataForUse: [],
+    data: [] as Data[],
   });
-  const [fetching, setIsfetching] = useState(false);
+  const [fetching, setIsFetching] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    setIsfetching(true);
-    const API_URL = `https://api.v2.emissions-api.org/api/v2/${gas}/average.json?country=${country}&begin=2021-02-24&end=2021-03-01`;
-    axios.get(API_URL).then(({ data }) => {
-      const dataPresent = Array.isArray(data) && !!data.length;
-      const parsedDates = data.map((d: Data) => {
-        const date = new Date(d.end);
-        const printedDate =
-          date.getFullYear() +
-          "-" +
-          (date.getMonth() + 1) +
-          "-" +
-          date.getDate();
+    setIsFetching(true);
 
-        return printedDate;
-      });
-      setIsfetching(false);
+    const API_URL = `https://api.v2.emissions-api.org/api/v2/${gas}/average.json?country=${country}&begin=2021-02-24&end=2021-03-01`;
+
+    axios.get(API_URL).then(({ data }: ServerResponse) => {
+      const dataPresent = Array.isArray(data) && !!data.length;
+      setIsFetching(false);
 
       if (dataPresent) {
-        setError(false);
         setData({
-          labels: parsedDates,
-          dataForUse: data as any,
+          data,
         });
+        setError(false);
       } else {
         setError(true);
       }
@@ -97,19 +90,12 @@ function App() {
           );
         })}
       </div>
-      {!fetching && !error && (
-        <HorizontalBarChart
-          labels={data.labels}
-          gas={gas}
-          allData={data.dataForUse}
-        />
-      )}
 
-      {fetching && !error && <div>Still fetching your data</div>}
+      {!error && !fetching && <Chart gas={gas} data={data.data} />}
 
-      {!fetching && error && (
-        <div>Sorry, no results were found for this search.</div>
-      )}
+      {!error && fetching && <div>Still fetching your data</div>}
+
+      {error && <div>Sorry, no results were found for this search.</div>}
     </div>
   );
 }
