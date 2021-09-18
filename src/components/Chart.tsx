@@ -9,7 +9,6 @@ interface IProps {
 interface Data {
   average: number;
   end: string;
-  start: string;
 }
 
 export const Chart: React.FC<IProps> = ({ gas, data }) => {
@@ -34,7 +33,7 @@ export const Chart: React.FC<IProps> = ({ gas, data }) => {
         data: values,
         backgroundColor: generateHex(),
         borderColor: generateHex(),
-        borderWidth: 4,
+        borderWidth: 2,
       },
     ],
   };
@@ -43,18 +42,20 @@ export const Chart: React.FC<IProps> = ({ gas, data }) => {
     <div>
       <Line
         data={chartData}
+        height={2}
+        width={1}
         options={{
           responsive: true,
           maintainAspectRatio: true,
-          indexAxis: "x",
-          aspectRatio: 4,
+          indexAxis: "y",
+          // aspectRatio: 4,
           elements: {
             line: {
               fill: true,
-              tension: 0.5,
+              tension: 1,
             },
             point: {
-              radius: 2,
+              pointStyle: "dash",
             },
           },
           plugins: {
