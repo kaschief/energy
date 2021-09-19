@@ -18,9 +18,11 @@ interface ServerResponse {
 function App() {
   const countriesArr = Object.values(Countries);
   const gasesArr = Object.values(Gases);
+  const countryNames = Object.keys(Countries);
 
   const [country, setCountry] = useState("DE");
   const [gas, setGas] = useState("carbonmonoxide");
+  const [displayCountry, setDisplayCountry] = useState("Germany");
 
   const [data, setData] = useState({
     data: [] as Data[],
@@ -71,9 +73,11 @@ function App() {
           width: "100%",
           justifyContent: "center",
         }}
+        className="title"
       >
-        <h1 style={{ margin: "0px 5px" }}>{country}</h1>
-        <h1 style={{ margin: "0px 5px" }}>{gas}</h1>
+        <h2 style={{ margin: "0px 5px" }}>
+          Emission of {gas} from {displayCountry}
+        </h2>
       </div>
 
       <div
@@ -86,29 +90,52 @@ function App() {
           alignItems: "center",
         }}
       >
-        <input
-          type="date"
-          required
-          name="begin-date"
-          value={beginDate}
-          min={firstAvailableDate}
-          max="2021-09-10"
-          onChange={(e) => {
-            setBeginDate(e.target.value);
+        <div
+          style={{
+            margin: "0 auto",
+            width: "100%",
           }}
-        />
+        >
+          <p
+            style={{
+              margin: "0 5px",
+              display: "flex",
+            }}
+          >
+            From:
+          </p>
 
-        <input
-          type="date"
-          required
-          name="end-date"
-          value={endDate}
-          min={beginDate}
-          max={lastAvailableDate}
-          onChange={(e) => {
-            setEndDate(e.target.value);
-          }}
-        />
+          <input
+            type="date"
+            required
+            name="begin-date"
+            value={beginDate}
+            min={firstAvailableDate}
+            max="2021-09-10"
+            onChange={(e) => {
+              setBeginDate(e.target.value);
+            }}
+          />
+
+          <p
+            style={{
+              margin: "0 5px",
+            }}
+          >
+            To:
+          </p>
+          <input
+            type="date"
+            required
+            name="end-date"
+            value={endDate}
+            min={beginDate}
+            max={lastAvailableDate}
+            onChange={(e) => {
+              setEndDate(e.target.value);
+            }}
+          />
+        </div>
       </div>
 
       <div style={{ margin: "20px" }}>
@@ -119,6 +146,7 @@ function App() {
               style={{ margin: "0px 5px" }}
               onClick={() => {
                 setCountry(country);
+                setDisplayCountry(countryNames[index]);
               }}
             >
               {country}
@@ -145,7 +173,7 @@ function App() {
 
       {!error && !fetching && <Chart gas={gas} data={data.data} />}
 
-      {!error && fetching && <div>Still fetching your data</div>}
+      {!error && fetching && <div>Suspensful music plays....</div>}
 
       {error && <div>Sorry, no results were found for this search.</div>}
     </div>

@@ -6,9 +6,9 @@ export enum Gases {
 }
 
 export enum Countries {
-  GERMANY = "DE",
-  FRANCE = "FR",
+  Germany = "DE",
+  France = "FR",
   UK = "GB",
-  JAMAICA = "JM",
-  CHINA = "CN",
+  Jamaica = "JM",
+  China = "CN",
 }
