@@ -1,32 +1,85 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { Gases, Countries } from "./types.d";
+import { Gases, Countries, Data, ServerResponse } from "./types.d";
 import axios from "axios";
+import { StyleSheet, css } from "aphrodite";
 
 import { Chart } from "./components/Chart";
 
-interface Data {
-  average: number;
-  end: string;
-  start: string;
-}
+const styles = StyleSheet.create({
+  wrapper: {
+    display: "grid",
+    maxWidth: "80vw",
+    gridTemplateAreas: `
+    "gases dates countries"
+    "title title title"
+    "chart chart chart"
+    "chart chart chart"
+  `,
+    gridTemplateColumns: "1fr 1fr 1fr",
+    gridTemplateRows: `
+    minmax(15px, auto)
+    auto
+    minmax(740px, auto)
+    `,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "30px",
+    margin: "40px",
+  },
+  title: {
+    gridArea: "title",
+    width: "100%",
+    textAlign: "center",
+  },
+  row: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  datesContainer: {
+    gridArea: "dates",
+    width: "100%",
+    justifyContent: "space-evenly",
+    display: "flex",
+    flexDirection: "row",
+  },
+  gasesContainer: {
+    gridArea: "gases",
+    width: "30vw",
+    justifyContent: "flex-start",
+    margin: "0 auto",
+    display: "flex",
+    flexDirection: "row",
+  },
+  countriesContainer: {
+    gridArea: "countries",
+    width: "20vw",
+    justifyContent: "flex-end",
+    margin: "0 auto",
+    display: "flex",
+    flexDirection: "row",
+  },
+  chartContainer: {
+    gridArea: "chart",
+    width: "80vw",
+    margin: "0 auto 20px",
+    padding: "20px",
+  },
+});
 
-interface ServerResponse {
-  data: Data[];
-}
-
-function App() {
+export const App: React.FC = (): JSX.Element => {
   const countriesArr = Object.values(Countries);
   const gasesArr = Object.values(Gases);
   const countryNames = Object.keys(Countries);
 
-  const [country, setCountry] = useState("DE");
-  const [gas, setGas] = useState("carbonmonoxide");
+  const [country, setCountry] = useState(Countries.Germany);
+  const [gas, setGas] = useState(Gases.CARBON_MONOXIDE);
   const [displayCountry, setDisplayCountry] = useState("Germany");
 
   const [data, setData] = useState({
     data: [] as Data[],
   });
+
   const [fetching, setIsFetching] = useState(false);
   const [error, setError] = useState(false);
 
@@ -56,94 +109,46 @@ function App() {
   }, [gas, country, beginDate, endDate]);
 
   return (
-    <div
-      className="App"
-      style={{
-        display: "flex",
-        width: "80%",
-        flexDirection: "column",
-        margin: "0 auto",
-        justifyContent: "center",
-      }}
-    >
-      <div
-        style={{
-          margin: "20px",
-          display: "flex",
-          width: "100%",
-          justifyContent: "center",
-        }}
-        className="title"
-      >
-        <h2 style={{ margin: "0px 5px" }}>
+    <div className={css(styles.wrapper)}>
+      <section className={css(styles.title)}>
+        <h2>
           Emission of {gas} from {displayCountry}
         </h2>
-      </div>
+      </section>
 
-      <div
-        style={{
-          margin: "0 auto",
-          display: "flex",
-          width: "40%",
-          justifyContent: "space-evenly",
-          height: "50px",
-          alignItems: "center",
-        }}
-      >
-        <div
-          style={{
-            margin: "0 auto",
-            width: "100%",
+      <div className={css(styles.datesContainer)}>
+        <p>From:</p>
+        <input
+          type="date"
+          required
+          name="begin-date"
+          value={beginDate}
+          min={firstAvailableDate}
+          max="2021-09-10"
+          onChange={(e) => {
+            setBeginDate(e.target.value);
           }}
-        >
-          <p
-            style={{
-              margin: "0 5px",
-              display: "flex",
-            }}
-          >
-            From:
-          </p>
+        />
 
-          <input
-            type="date"
-            required
-            name="begin-date"
-            value={beginDate}
-            min={firstAvailableDate}
-            max="2021-09-10"
-            onChange={(e) => {
-              setBeginDate(e.target.value);
-            }}
-          />
-
-          <p
-            style={{
-              margin: "0 5px",
-            }}
-          >
-            To:
-          </p>
-          <input
-            type="date"
-            required
-            name="end-date"
-            value={endDate}
-            min={beginDate}
-            max={lastAvailableDate}
-            onChange={(e) => {
-              setEndDate(e.target.value);
-            }}
-          />
-        </div>
+        <p>To:</p>
+        <input
+          type="date"
+          required
+          name="end-date"
+          value={endDate}
+          min={beginDate}
+          max={lastAvailableDate}
+          onChange={(e) => {
+            setEndDate(e.target.value);
+          }}
+        />
       </div>
 
-      <div style={{ margin: "20px" }}>
+      <div className={css(styles.countriesContainer)}>
         {countriesArr.map((country, index) => {
           return (
             <button
               key={index}
-              style={{ margin: "0px 5px" }}
               onClick={() => {
                 setCountry(country);
                 setDisplayCountry(countryNames[index]);
@@ -155,12 +160,11 @@ function App() {
         })}
       </div>
 
-      <div style={{ margin: "20px" }}>
+      <div className={css(styles.gasesContainer)}>
         {gasesArr.map((gas, index) => {
           return (
             <button
               key={index}
-              style={{ margin: "0px 5px" }}
               onClick={() => {
                 setGas(gas);
               }}
@@ -171,13 +175,15 @@ function App() {
         })}
       </div>
 
-      {!error && !fetching && <Chart gas={gas} data={data.data} />}
+      <div className={css(styles.chartContainer)}>
+        {!error && !fetching && <Chart gas={gas} data={data.data} />}
 
-      {!error && fetching && <div>Suspensful music plays....</div>}
+        {!error && fetching && <div>Suspensful music plays....</div>}
 
-      {error && <div>Sorry, no results were found for this search.</div>}
+        {error && <div>Sorry, no results were found for this search.</div>}
+      </div>
     </div>
   );
-}
+};
 
 export default App;

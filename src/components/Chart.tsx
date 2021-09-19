@@ -1,17 +1,8 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
+import { ChartProps, Data } from "../types.d";
 
-interface IProps {
-  gas: string;
-  data?: Data[];
-}
-
-interface Data {
-  average: number;
-  end: string;
-}
-
-export const Chart: React.FC<IProps> = ({ gas, data }) => {
+export const Chart: React.FC<ChartProps> = ({ gas, data }) => {
   const parsedDates = data!.map((d: Data) => {
     const date = new Date(d.end);
     const printedDate =

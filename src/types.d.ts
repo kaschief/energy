@@ -12,3 +12,18 @@ export enum Countries {
   Jamaica = "JM",
   China = "CN",
 }
+
+export interface Data {
+  average: number;
+  end: string;
+  start: string;
+}
+
+export interface ServerResponse {
+  data: Data[];
+}
+
+export interface ChartProps {
+  gas: string;
+  data?: Data[];
+}
